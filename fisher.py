@@ -189,6 +189,16 @@ class Wallet:
 
         plt.savefig(figname)
 
+def date_after(d1, d2):
+    items1 = d1.split("-")
+    items2 = d2.split("-")
+    for i in range(len(items1)):
+        if items1[i] < items2[i]:
+            return False
+        elif items1[i] > items2[i]:
+            return True
+    return False
+
 if __name__ == "__main__":
     stock = '512660.SH'
     config = {
@@ -217,6 +227,17 @@ if __name__ == "__main__":
         "unit_add_pct": 10,
     }
     '''
+
+    stock = "162411.SZ"
+    config = {
+        "init": 0.5,
+        "price_gap_pct": 10,
+        "unit": 5000,
+        "limits": (0.2, 0.7),
+        "unit_add_pct": 10,
+        "start_date": "2016-04-20",
+        "end_date": "2019-03-07"
+    }
     history_filename = stock + ".csv"
     db = []
     name = "%s_%d%%_(%f-%f)_%d%%" % (stock, config["price_gap_pct"], config["limits"][0], config["limits"][1], config["unit_add_pct"])
@@ -229,12 +250,23 @@ if __name__ == "__main__":
             if cnt == 1:
                 continue
     #         print(row)
-            if cnt < 2:
+            if cnt < 200:
+                print(row)
                 continue
             if len(row) < 12:
                 continue
+            # before start date
+            if date_after(config["start_date"], row[2]):
+                continue
+            # after end date
+            if date_after(row[2], config["end_date"]):
+                continue
+
             # highest, lowest, last, avg
-            db.append(Record(row[2], PriceInfo(float(row[5]), float(row[6]), float(row[7]), float(row[12]))))
+            try:
+                db.append(Record(row[2], PriceInfo(float(row[5]), float(row[6]), float(row[7]), float(row[12]))))
+            except:
+                pass
     wallet = Wallet(50000)
     mesh = Mesh(wallet, stock)
     mesh.generate_mesh(config["init"], config["price_gap_pct"], config["unit"],config["limits"], unit_add_percent=config["unit_add_pct"])
