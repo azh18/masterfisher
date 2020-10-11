@@ -230,9 +230,9 @@ if __name__ == "__main__":
 
     stock = "162411.SZ"
     config = {
-        "init": 0.5,
+        "init": 0.314,
         "price_gap_pct": 10,
-        "unit": 5000,
+        "unit": 15000,
         "limits": (0.2, 0.7),
         "unit_add_pct": 10,
         "start_date": "2016-04-20",
